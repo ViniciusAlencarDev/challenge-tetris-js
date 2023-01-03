@@ -18,24 +18,75 @@ class Game {
         this.fastSpeed = false
     }
 
+    generateBlocks(random) {
+        const blocks = [
+            [
+                [0, random - 1],
+                [0, random],
+                [0, random + 1],
+                [1, random]
+            ]
+        ]
+        
+        const positionRandom = Math.floor(Math.random() * blocks.length);
+        return blocks[positionRandom]
+    }
+
     events() {
-        document.addEventListener('keydown', e => {
-            this.board[this.newBlock[0]][this.newBlock[1]] = 0;
+        document.addEventListener('keydown', e => {this.newBlock.map(block => this.board[block[0]][block[1]] = 0); 
             switch(e.code) {
                 case 'ArrowLeft':
-                    if(this.newBlock[1] > 0) {
-                        if(this.board[this.newBlock[0]][this.newBlock[1] - 1] == 0)
-                            this.newBlock[1] -= 1;
+                    let smallesNumberLeft = null;
+                    this.newBlock.map((block, key) => {
+                        if(smallesNumberLeft === null)
+                            smallesNumberLeft = key;
+                        else {
+                            if(block[1] < smallesNumberLeft)
+                            smallesNumberLeft = key;
+                        }
+                    })
+                    const blockVerifyLeft = this.newBlock[smallesNumberLeft];
+
+                    if(blockVerifyLeft[1] > 0) {
+                        if(this.board[blockVerifyLeft[0]][blockVerifyLeft[1] - 1] == 0) {
+                            this.newBlock = this.newBlock.map(block => {
+                                this.board[block[0]][block[1]] = 0;
+                                return [block[0], block[1] - 1]
+                            })
+                            
+                        }
                     }
                     break;
                 case 'ArrowRight':
-                    if(this.newBlock[1] < this.board[0].length - 1) {
-                        if(this.board[this.newBlock[0]][this.newBlock[1] + 1] == 0)
-                            this.newBlock[1] += 1;
+                    let smallesNumberRight = null;
+                    this.newBlock.map((block, key) => {
+                        if(smallesNumberRight === null)
+                            smallesNumberRight = key;
+                        else {
+                            if(block[1] > smallesNumberRight)
+                            smallesNumberRight = key;
+                        }
+                    })
+                    const blockVerifyRight = this.newBlock[smallesNumberRight];
+
+                    if(blockVerifyRight[1] < (this.board[0].length - 1)) {
+                        if(this.board[blockVerifyRight[0]][blockVerifyRight[1] + 1] == 0) {
+                            this.newBlock = this.newBlock.map(block => {
+                                this.board[block[0]][block[1]] = 0;
+                                return [block[0], block[1] + 1]
+                            })
+                            
+                        }
                     }
                     break;
                 case 'ArrowDown':
                     this.fastSpeed = true;
+                    break;
+                case 'ArrowUp':
+                    this.newBlock = this.newBlock.map(block => {
+                        this.board[block[0]][block[1]] = 0;
+                        return block
+                    }).reverse()
                     break;
                 default: return;
             }
@@ -72,7 +123,7 @@ class Game {
 
     verifyGameover() {
         const verify = this.board[0].reduce((total, current) => total += current, 0)
-        return verify > 0 && (this.newBlock == null || this.newBlock[0] !== 0)
+        return verify > 0 && (this.newBlock == null || this.newBlock.reduce((total, block) => total += block[0]) > 0)
     }
 
     gameover() {
@@ -107,17 +158,34 @@ class Game {
             this.gameover();
         } else {
             if(!this.newBlock) {
-                const blockHorizontalRandom = Math.floor(Math.random() * (this.blocksHorizontal));
-                this.newBlock = [0, blockHorizontalRandom]
-                this.board[this.newBlock[0]][this.newBlock[1]] = this.newNumberColor;
+                const blockHorizontalRandom = Math.floor(Math.random() * ((this.blocksHorizontal - 1)- 1) + 1);
+                this.newBlock = this.generateBlocks(blockHorizontalRandom)
+                this.newBlock.map(block => {
+                    this.board[block[0]][block[1]] = this.newNumberColor;
+                })
             } else {
-                if(this.newBlock[0] < (this.board.length - 1) && this.board[this.newBlock[0] + 1][this.newBlock[1]] == 0) {
-                    this.board[this.newBlock[0]][this.newBlock[1]] = 0;
-                    this.newBlock = [this.newBlock[0] + 1, this.newBlock[1]]
-                    this.board[this.newBlock[0]][this.newBlock[1]] = this.newNumberColor;
-    
-                    if(this.newBlock[0] === (this.board.length - 1)) {
+                const lastBlock = this.newBlock[this.newBlock.length - 1];
 
+                
+
+                if(lastBlock[0] < (this.board.length - 1)) {
+
+                    // const blocksBellow = this.newBlock.filter(block => {
+                    //     return this.board[block[0] + 1][block[1]] > 0 && tihis.newBlock.filter(blockFilter => blockFilter[0] === block[0] + 1 && blockFilter[1] === block[1])
+                    // })
+                    // console.log('Blocks Bellow', blocksBellow)
+
+                    let newBlock = [];
+                    this.newBlock.reverse().map(block => {
+                        this.board[block[0]][block[1]] = 0;
+                        newBlock.push([block[0] + 1, block[1]])
+                    })
+                    this.newBlock = newBlock
+                    this.newBlock.map(block => {
+                        this.board[block[0]][block[1]] = this.newNumberColor;
+                    })
+
+                    if(lastBlock[0] === (this.board.length - 1)) {
                         this.newBlock = null
                         this.newNumberColor = Math.floor(Math.random() * (this.colors.length - 1) + 1)
                     }
