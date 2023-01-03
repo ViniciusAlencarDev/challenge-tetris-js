@@ -107,8 +107,8 @@ class Game {
             this.gameover();
         } else {
             if(!this.newBlock) {
-                const blockCenter = Math.floor(this.blocksHorizontal / 2);
-                this.newBlock = [0, blockCenter]
+                const blockHorizontalRandom = Math.floor(Math.random() * (this.blocksHorizontal));
+                this.newBlock = [0, blockHorizontalRandom]
                 this.board[this.newBlock[0]][this.newBlock[1]] = this.newNumberColor;
             } else {
                 if(this.newBlock[0] < (this.board.length - 1) && this.board[this.newBlock[0] + 1][this.newBlock[1]] == 0) {
