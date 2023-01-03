@@ -13,7 +13,7 @@ class Game {
 
     bootstrap() {
         this.ctx = canvas.getContext('2d')
-        this.colors = ['#333', 'white', 'blue', 'green', 'red', 'yellow', 'brown', 'purple']
+        this.colors = ['gray', 'white', 'lightblue', 'green', 'red', 'orange', 'yellow', 'purple', 'cyan', 'pink', '#333', '#7FFF00', '#B0C4DE', '#3CB371']
         this.speed = 1
         this.fastSpeed = false
     }
@@ -25,7 +25,38 @@ class Game {
                 [0, random],
                 [0, random + 1],
                 [1, random]
-            ]
+            ],
+            [
+                [0, random],
+                [1, random + 1],
+                [1, random],
+                [2, random]
+            ],
+            [
+                [1, random],
+                [0, random - 1],
+                [0, random],
+                [1, random + 1]
+            ],
+            [
+                [0, random],
+                [1, random],
+                [2, random],
+                [3, random],
+                [3, random + 1]
+            ],
+            [
+                [0, random],
+                [0, random + 1],
+                [1, random],
+                [1, random + 1],
+            ],
+            [
+                [0, random - 1],
+                [0, random],
+                [0, random + 1],
+                [0, random + 2],
+            ],
         ]
         
         const positionRandom = Math.floor(Math.random() * blocks.length);
@@ -33,49 +64,33 @@ class Game {
     }
 
     events() {
-        document.addEventListener('keydown', e => {this.newBlock.map(block => this.board[block[0]][block[1]] = 0); 
+        document.addEventListener('keydown', e => {
+            if(this.newBlock)
+                this.newBlock.map(block => this.board[block[0]][block[1]] = 0); 
             switch(e.code) {
                 case 'ArrowLeft':
-                    let smallesNumberLeft = null;
-                    this.newBlock.map((block, key) => {
-                        if(smallesNumberLeft === null)
-                            smallesNumberLeft = key;
-                        else {
-                            if(block[1] < smallesNumberLeft)
-                            smallesNumberLeft = key;
-                        }
-                    })
-                    const blockVerifyLeft = this.newBlock[smallesNumberLeft];
+                    const verifyLeft = this.newBlock ? this.newBlock.map(item => item[1]).sort()[0] : 0
+                    const blockVerifyLeft =  this.newBlock.sort((a, b) => b[1] - a[1])[0]
 
-                    if(blockVerifyLeft[1] > 0) {
+                    if(verifyLeft > 0) {
                         if(this.board[blockVerifyLeft[0]][blockVerifyLeft[1] - 1] == 0) {
                             this.newBlock = this.newBlock.map(block => {
                                 this.board[block[0]][block[1]] = 0;
                                 return [block[0], block[1] - 1]
                             })
-                            
-                        }
+                        } 
                     }
                     break;
                 case 'ArrowRight':
-                    let smallesNumberRight = null;
-                    this.newBlock.map((block, key) => {
-                        if(smallesNumberRight === null)
-                            smallesNumberRight = key;
-                        else {
-                            if(block[1] > smallesNumberRight)
-                            smallesNumberRight = key;
-                        }
-                    })
-                    const blockVerifyRight = this.newBlock[smallesNumberRight];
+                    const verifyRight = this.newBlock.map(item => item[1]).sort()[0]
+                    const blockVerifyRight =  this.newBlock.sort((a, b) => a[1] - b[1])[0]
 
-                    if(blockVerifyRight[1] < (this.board[0].length - 1)) {
+                    if(verifyRight < (this.board[0].length - this.newBlock[0].length)) {
                         if(this.board[blockVerifyRight[0]][blockVerifyRight[1] + 1] == 0) {
                             this.newBlock = this.newBlock.map(block => {
                                 this.board[block[0]][block[1]] = 0;
                                 return [block[0], block[1] + 1]
                             })
-                            
                         }
                     }
                     break;
@@ -83,10 +98,23 @@ class Game {
                     this.fastSpeed = true;
                     break;
                 case 'ArrowUp':
+                    const positionCenter = Math.floor(this.newBlock.length / 2)
+                    const blockCenter = this.newBlock[positionCenter];
                     this.newBlock = this.newBlock.map(block => {
-                        this.board[block[0]][block[1]] = 0;
-                        return block
-                    }).reverse()
+                        const diffX = block[1] - blockCenter[1]
+                        const diffY = block[0] - blockCenter[0]
+                        const diff = diffX + diffY
+
+                        console.log('Diff', diff)
+
+                        if(diff == 0) {
+                            return block
+                        } else if(diff > 0) {
+                            return [block[0] - diff, block[1] + diff]
+                        } else {
+                            return [block[0] + diff, block[1] - diff]
+                        }
+                    })
                     break;
                 default: return;
             }
@@ -158,45 +186,48 @@ class Game {
             this.gameover();
         } else {
             if(!this.newBlock) {
-                const blockHorizontalRandom = Math.floor(Math.random() * ((this.blocksHorizontal - 1)- 1) + 1);
+                // min and max size block in list
+                const blockHorizontalRandom = Math.floor(Math.random() * ((this.blocksHorizontal - 2) - 1) + 1);
                 this.newBlock = this.generateBlocks(blockHorizontalRandom)
                 this.newBlock.map(block => {
                     this.board[block[0]][block[1]] = this.newNumberColor;
                 })
             } else {
-                const lastBlock = this.newBlock[this.newBlock.length - 1];
+                const lastBlock = this.newBlock.at(-1);       
 
-                
-
-                if(lastBlock[0] < (this.board.length - 1)) {
-
-                    // const blocksBellow = this.newBlock.filter(block => {
-                    //     return this.board[block[0] + 1][block[1]] > 0 && tihis.newBlock.filter(blockFilter => blockFilter[0] === block[0] + 1 && blockFilter[1] === block[1])
-                    // })
-                    // console.log('Blocks Bellow', blocksBellow)
-
-                    let newBlock = [];
-                    this.newBlock.reverse().map(block => {
-                        this.board[block[0]][block[1]] = 0;
-                        newBlock.push([block[0] + 1, block[1]])
-                    })
-                    this.newBlock = newBlock
-                    this.newBlock.map(block => {
-                        this.board[block[0]][block[1]] = this.newNumberColor;
-                    })
-
-                    if(lastBlock[0] === (this.board.length - 1)) {
-                        this.newBlock = null
-                        this.newNumberColor = Math.floor(Math.random() * (this.colors.length - 1) + 1)
+                if(this.newBlock) {
+                    try {
+                        if(lastBlock[0] < (this.board.length - 1) && this.newBlock.reverse().filter(block => {
+                            return this.board[block[0] + 1][block[1]] > 0 && this.newBlock.filter(blockFilter => blockFilter[0] === block[0] + 1 && blockFilter[1] === block[1]).length === 0
+                        }).length === 0) {
+        
+                                let newBlock = [];
+                                this.newBlock.reverse().map(block => {
+                                    this.board[block[0]][block[1]] = 0;
+                                    newBlock.push([block[0] + 1, block[1]])
+                                })
+                                this.newBlock = newBlock
+                                this.newBlock.map(block => {
+                                    this.board[block[0]][block[1]] = this.newNumberColor;
+                                })
+            
+                                if(lastBlock[0] === (this.board.length - 1)) {
+                                    this.newBlock = null
+                                    this.newNumberColor = Math.floor(Math.random() * (this.colors.length - 1) + 1)
+                                }
+                            
+                        } else {
+                            this.newBlock = null
+                            this.newNumberColor = Math.floor(Math.random() * (this.colors.length - 1) + 1)
+                        }
+                    } catch(error) {
+                        console.log(error)
                     }
-                } else {
-                    this.newBlock = null
-                    this.newNumberColor = Math.floor(Math.random() * (this.colors.length - 1) + 1)
                 }
             }
-    
+
             this.draw()
-            setTimeout(() => this.move(), this.fastSpeed ? 30 / this.speed : 100 / this.speed)
+            setTimeout(() => this.move(), this.fastSpeed ? 50 / this.speed : 150 / this.speed)
         }
     }
 
@@ -206,14 +237,16 @@ class Game {
 
         for(let i = 0; i < this.board.length; i++) {
             for(let j = 0; j < this.board[i].length; j++) {
-                this.ctx.fillStyle = this.colors[this.board[i][j]];
+                this.ctx.fillStyle = 'darkgray'
                 this.ctx.fillRect((j * sizeBoxWidth), (i * sizeBoxHeight), sizeBoxWidth, sizeBoxHeight);
+                this.ctx.fillStyle = this.colors[this.board[i][j]];
+                this.ctx.fillRect((j * sizeBoxWidth) + 0.5, (i * sizeBoxHeight) + 0.5, sizeBoxWidth - 0.5, sizeBoxHeight - 0.5);
             }
         }
 
         this.ctx.fillStyle = '#fff'
-        this.ctx.fillText(`Score: ${this.score}`, 10, 20, 100);
-        this.ctx.fillText(`Record: ${this.record}`, 10, 35, 100);
+        this.ctx.fillText(`Score: ${this.score}`, 10, 20, 200);
+        this.ctx.fillText(`Record: ${this.record}`, 10, 35, 200);
     }
 
 }
