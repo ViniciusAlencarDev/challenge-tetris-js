@@ -103,17 +103,50 @@ class Game {
                     this.newBlock = this.newBlock.map(block => {
                         const diffX = block[1] - blockCenter[1]
                         const diffY = block[0] - blockCenter[0]
-                        const diff = diffX + diffY
 
-                        console.log('Diff', diff)
-
-                        if(diff == 0) {
-                            return block
-                        } else if(diff > 0) {
-                            return [block[0] - diff, block[1] + diff]
+                        let quadrant = null;
+                        if(diffX === 0 && diffY === 0) {
+                            quadrant = 0;
                         } else {
-                            return [block[0] + diff, block[1] - diff]
+                            if(diffX > 0 && diffY < 0) {
+                                quadrant = 1;
+                            } else if(diffX < 0 && diffY < 0) {
+                                quadrant = 2;
+                            } else if(diffX < 0 && diffY > 0) {
+                                quadrant = 3;
+                            } else if(diffX > 0 && diffY > 0) {
+                                quadrant = 4;
+                            }
+                            // else  if(diffX === 0) {
+                            //     if(diffY < 0) {
+                            //         quadrant = 1
+                            //     } else if(diffY > 0) {
+                            //         quadrant = 4
+                            //     }
+                            // } else if(diffY === 0) {
+                            //     if(diffX < 0) {
+                            //         quadrant = 2
+                            //     } else if(diffX > 0) {
+                            //         quadrant = 1
+                            //     }
+                            // }
                         }
+
+                        console.log(`
+(DiffX: ${diffX} and DiffY: ${diffY})
+    Quadrant: ${quadrant}
+                        `)
+                        return block;
+
+                        // console.log('Diff', diff)
+                        const diff = diffX + diffY
+                        // if(diff == 0) {
+                        //     return block
+                        // } else if(diff > 0) {
+                        //     return [block[0] - diff, block[1] + diff]
+                        // } else {
+                        //     return [block[0] + diff, block[1] - diff]
+                        // }
                     })
                     break;
                 default: return;
