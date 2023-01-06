@@ -73,7 +73,8 @@ class Game {
                     const blockVerifyLeft =  this.newBlock.sort((a, b) => b[1] - a[1])[0]
 
                     if(verifyLeft > 0) {
-                        if(this.board[blockVerifyLeft[0]][blockVerifyLeft[1] - 1] == 0) {
+                        if(this.board[blockVerifyLeft[0]][blockVerifyLeft[1] - 1] == 0 &&
+                           this.board[blockVerifyLeft[0] + 1][blockVerifyLeft[1] - 1] == 0) {
                             this.newBlock = this.newBlock.map(block => {
                                 this.board[block[0]][block[1]] = 0;
                                 return [block[0], block[1] - 1]
@@ -86,11 +87,14 @@ class Game {
                     const blockVerifyRight =  this.newBlock.sort((a, b) => a[1] - b[1])[0]
 
                     if(verifyRight < (this.board[0].length - this.newBlock[0].length)) {
-                        if(this.board[blockVerifyRight[0]][blockVerifyRight[1] + 1] == 0) {
+                        if(this.board[blockVerifyRight[0]][blockVerifyRight[1] + 1] == 0 &&
+                           this.board[blockVerifyRight[0] + 1][blockVerifyRight[1] + 1] == 0) {
                             this.newBlock = this.newBlock.map(block => {
                                 this.board[block[0]][block[1]] = 0;
                                 return [block[0], block[1] + 1]
                             })
+                        } else {
+                            console.log('ok')
                         }
                     }
                     break;
