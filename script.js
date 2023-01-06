@@ -108,28 +108,29 @@ class Game {
                         if(diffX === 0 && diffY === 0) {
                             quadrant = 0;
                         } else {
-                            if(diffX > 0 && diffY < 0) {
-                                quadrant = 1;
-                            } else if(diffX < 0 && diffY < 0) {
-                                quadrant = 2;
-                            } else if(diffX < 0 && diffY > 0) {
-                                quadrant = 3;
-                            } else if(diffX > 0 && diffY > 0) {
-                                quadrant = 4;
+                            if(diffX !== 0 && diffY !== 0) {
+                                if(diffX > 0 && diffY < 0) {
+                                    quadrant = 1;
+                                } else if(diffX < 0 && diffY < 0) {
+                                    quadrant = 2;
+                                } else if(diffX < 0 && diffY > 0) {
+                                    quadrant = 3;
+                                } else if(diffX > 0 && diffY > 0) {
+                                    quadrant = 4;
+                                }
+                            } else {
+                                if(diffX === 0) {
+                                    if(diffY < 0)
+                                        quadrant = 1
+                                    else if(diffY > 0)
+                                        quadrant = 4
+                                } else if(diffY === 0) {
+                                    if(diffX < 0)
+                                        quadrant = 2
+                                    else if(diffX > 0)
+                                        quadrant = 1
+                                }
                             }
-                            // else  if(diffX === 0) {
-                            //     if(diffY < 0) {
-                            //         quadrant = 1
-                            //     } else if(diffY > 0) {
-                            //         quadrant = 4
-                            //     }
-                            // } else if(diffY === 0) {
-                            //     if(diffX < 0) {
-                            //         quadrant = 2
-                            //     } else if(diffX > 0) {
-                            //         quadrant = 1
-                            //     }
-                            // }
                         }
 
                         console.log(`
