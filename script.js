@@ -141,7 +141,7 @@ class Game {
 (DiffX: ${diffX} and DiffY: ${diffY})
     Quadrant: ${quadrant}
                         `)
-                        return block;
+                        return [block[0] + diff * (quadrant === 3 || quadrant === 4 ? -1 : 1), block[1] + diff * (quadrant === 1 || quadrant === 2 ? -1 : 1)];
 
                         // console.log('Diff', diff)
                         const diff = diffX + diffY
